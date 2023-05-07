@@ -2,20 +2,23 @@ mod physics;
 mod utils;
 mod world;
 
-use utils::MAX_COLOR_VAL;
+use crate::utils::Color;
 
-const IMAGE_FORMAT: &str = "P3"; // PPM, ASCII, RGB
 const ASPECT_RATIO: f64 = 3.0 / 2.0;
 const IMAGE_WIDTH: i32 = 400;
 const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as i32;
 
-fn main() {
+fn main() -> std::io::Result<()> {
     let camera = world::Camera::default();
+    let image = utils::PPMImage {
+        height: IMAGE_HEIGHT,
+        width: IMAGE_WIDTH,
+    };
 
-    println!("{IMAGE_FORMAT}\n{IMAGE_WIDTH}\t{IMAGE_HEIGHT}\n{MAX_COLOR_VAL}");
+    let mut buffer = vec![Color::ZERO; (IMAGE_HEIGHT * IMAGE_WIDTH) as usize];
 
     for j in (0..IMAGE_HEIGHT).rev() {
-        eprint!(
+        print!(
             "\rRender progress {progress}%.",
             progress = 100 * (1 - j / IMAGE_HEIGHT)
         );
@@ -29,10 +32,14 @@ fn main() {
                 camera.lower_left_corner + u * camera.horizontal + v * camera.vertical
                     - camera.origin,
             );
-            let pixel = r.color();
-            utils::write_color(pixel);
+
+            buffer[(i + j * IMAGE_WIDTH) as usize] = r.color();
         }
-        print!("\n")
     }
-    eprintln!("\nDone.");
+
+    image.write(buffer, "image.ppm")?;
+
+    println!("\nDone.");
+
+    Ok(())
 }
