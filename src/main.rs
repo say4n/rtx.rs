@@ -1,12 +1,12 @@
-mod vector;
+mod utils;
+use utils::MAX_COLOR_VAL;
 
 fn main() {
     let image_format = "P3"; // PPM, ASCII, RGB
     let image_height = 256;
     let image_width = 256;
-    let max_color_val = 255;
 
-    println!("{image_format}\n{image_height}\t{image_width}\n{max_color_val}");
+    println!("{image_format}\n{image_height}\t{image_width}\n{MAX_COLOR_VAL}");
 
     for i in (0..image_height).rev() {
         eprint!(
@@ -15,11 +15,12 @@ fn main() {
         );
 
         for j in 0..image_width {
-            let vr = (i * max_color_val) / image_height;
-            let vg = (j * max_color_val) / image_width;
-            let vb = 128;
-
-            println!("{vr}\t{vg}\t{vb}")
+            let pixel = utils::Color {
+                x: i as f64 / image_height as f64,
+                y: j as f64 / image_width as f64,
+                z: 0.25,
+            };
+            utils::write_color(pixel);
         }
         println!("")
     }
