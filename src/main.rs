@@ -2,20 +2,13 @@ mod physics;
 mod utils;
 mod world;
 
-use crate::utils::Color;
-
 const ASPECT_RATIO: f64 = 3.0 / 2.0;
 const IMAGE_WIDTH: i32 = 400;
 const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as i32;
 
 fn main() -> std::io::Result<()> {
     let camera = world::Camera::default();
-    let image = utils::PPMImage {
-        height: IMAGE_HEIGHT,
-        width: IMAGE_WIDTH,
-    };
-
-    let mut buffer = vec![Color::ZERO; (IMAGE_HEIGHT * IMAGE_WIDTH) as usize];
+    let mut image = utils::PPMImage::new(IMAGE_HEIGHT, IMAGE_WIDTH);
 
     for j in (0..IMAGE_HEIGHT).rev() {
         print!(
@@ -33,11 +26,11 @@ fn main() -> std::io::Result<()> {
                     - camera.origin,
             );
 
-            buffer[(i + j * IMAGE_WIDTH) as usize] = r.color();
+            image.pixel_buffer[(i + j * IMAGE_WIDTH) as usize] = r.color();
         }
     }
 
-    image.write(buffer, "image.ppm")?;
+    image.write("image.ppm")?;
 
     println!("\nDone.");
 
