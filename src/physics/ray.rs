@@ -36,12 +36,15 @@ impl Ray {
             },
             0.5,
         );
-        if s.hit(self) {
-            return Color {
-                x: 1.0,
-                y: 0.0,
-                z: 0.0,
-            };
+        let t = s.hit(self);
+        if t > 0.0 {
+            let surface_normal = self.at(t).normalize() - s.center;
+            return 0.5
+                * Color {
+                    x: surface_normal.x + 1.0,
+                    y: surface_normal.y + 1.0,
+                    z: surface_normal.z + 1.0,
+                };
         }
 
         let unit_direction = unit_vector(self.direction());
