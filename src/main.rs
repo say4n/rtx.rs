@@ -1,3 +1,4 @@
+pub mod objects;
 mod physics;
 mod utils;
 mod world;

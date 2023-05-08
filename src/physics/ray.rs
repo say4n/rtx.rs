@@ -1,6 +1,9 @@
 use glam::DVec3;
 
-use crate::utils::{unit_vector, Color, Point};
+use crate::{
+    objects::{Hittable, Sphere},
+    utils::{unit_vector, Color, Point},
+};
 
 pub struct Ray {
     orig: Point,
@@ -25,6 +28,22 @@ impl Ray {
     }
 
     pub fn color(&self) -> Color {
+        let s = Sphere::new(
+            Point {
+                x: 0.0,
+                y: 0.0,
+                z: -1.0,
+            },
+            0.5,
+        );
+        if s.hit(self) {
+            return Color {
+                x: 1.0,
+                y: 0.0,
+                z: 0.0,
+            };
+        }
+
         let unit_direction = unit_vector(self.direction());
         let t = 0.5 * (unit_direction.y + 1.0);
         (1.0 - t)
